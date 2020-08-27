@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas Test</title>
+</head>
+<body>
+  <canvas id="c" height="400px" width="400px"></canvas>
+</body>
+<style>
+  html { background-color: black; }
+  body { 
+    margin: 40px auto;
+    width: 400px; 
+    height: 800px; 
+    background-color: grey; 
+  }
+  canvas { background-color: white; }
+</style>
+<script>
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext('2d');
+  ctx.strokeRect(200 - 75/2, 180, 75, 150);
+</script>
+</html>

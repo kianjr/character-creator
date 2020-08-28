@@ -6,6 +6,8 @@
 </head>
 <body>
   <canvas id="c" height="400px" width="400px"></canvas>
+  <button onclick="randomCharacter()">Random Character</button>
+  
 </body>
 <style>
   html { background-color: black; }
@@ -16,40 +18,83 @@
     background-color: grey; 
   }
   canvas { background-color: white; }
+  button { font-size: 30px; width: 100%;}
 </style>
 <script>
   const canvas = document.getElementById("c")
   const ctx = canvas.getContext('2d')
-  const baseWidth = 75
-  const baseHeight = 150
-  const leftEdge = 200 - 75/2
-  const rightEdge = leftEdge + baseWidth
-  const topEdge = 180
-  const body = {
-    lShoulder: { x: leftEdge + 10, y: topEdge },
-    rShoulder: { x: rightEdge - 10, y: topEdge },
-    lChest: { x: leftEdge - 10, y: topEdge + baseHeight * .2 },
-    rChest: { x: rightEdge + 10, y: topEdge + baseHeight * .2 },
-    lWaist: { x: leftEdge, y: topEdge + baseHeight * .5 },
-    rWaist: { x: rightEdge, y: topEdge + baseHeight * .5 },
-    lFoot: { x: leftEdge, y: topEdge + baseHeight },
-    rFoot: { x: rightEdge, y: topEdge + baseHeight },
-  }
-  ctx.beginPath();
-  ctx.moveTo(body.lShoulder.x, body.lShoulder.y);
-  ctx.lineTo(body.lChest.x, body.lChest.y);
-  ctx.lineTo(body.lWaist.x, body.lWaist.y);
-  ctx.lineTo(body.lFoot.x, body.lFoot.y);
-  ctx.lineTo(body.rFoot.x, body.rFoot.y);
-  ctx.lineTo(body.rWaist.x, body.rWaist.y);
-  ctx.lineTo(body.rChest.x, body.rChest.y);
-  ctx.lineTo(body.rShoulder.x, body.rShoulder.y);
-  ctx.closePath();
-  ctx.stroke();
+  const center = canvas.width / 2
+  const base = canvas.height - 40
 
-  ctx.beginPath();
-  ctx.arc(200, 130, 30, 0, Math.PI * 2);
-  ctx.closePath()
-  ctx.stroke();
+  function randomCharacter(){
+    clearCanvas()
+    drawCharacter(randomCoords())
+  }
+
+  function clearCanvas(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  function randomCoords(){
+    const height = kinda(165);
+    const width = kinda(75);
+    const headSize = kinda(30, .1);
+    const neck = kinda(15);
+    const shoulderWidth = kinda(width);
+    const chestWidth = kinda(width);
+    const waistWidth = kinda(width);
+    const hipWidth = kinda(width);
+    const footWidth = kinda(width);
+    
+    const coords = {
+      head: {x: center, y: base - height - headSize - neck, radius: headSize},
+
+      lShoulder: { x: center - shoulderWidth / 2, y: base - height },
+      rShoulder: { x: center + shoulderWidth / 2, y: base - height },
+
+      lChest: { x: center - chestWidth / 2, y: base - height * .85 },
+      rChest: { x: center + chestWidth / 2, y: base - height * .85},
+
+      lWaist: { x: center - waistWidth / 2, y: base - height * .6 },
+      rWaist: { x: center + waistWidth / 2, y: base - height * .6 },
+
+      lHips: { x: center - hipWidth / 2, y: base - height * .45 },
+      rHips: { x: center + hipWidth / 2, y: base - height * .45 },
+
+      lFoot: { x: center - footWidth / 2, y: base },
+      rFoot: { x: center + footWidth / 2, y: base }
+    }
+    return coords
+  }
+
+
+  function drawCharacter(coords){
+    ctx.beginPath();
+    ctx.moveTo(coords.lShoulder.x, coords.lShoulder.y);
+    ctx.lineTo(coords.lChest.x, coords.lChest.y);
+    ctx.lineTo(coords.lWaist.x, coords.lWaist.y);
+    ctx.lineTo(coords.lHips.x, coords.lHips.y);
+    ctx.lineTo(coords.lFoot.x, coords.lFoot.y);
+    ctx.lineTo(coords.rFoot.x, coords.rFoot.y);
+    ctx.lineTo(coords.rHips.x, coords.rHips.y);
+    ctx.lineTo(coords.rWaist.x, coords.rWaist.y);
+    ctx.lineTo(coords.rChest.x, coords.rChest.y);
+    ctx.lineTo(coords.rShoulder.x, coords.rShoulder.y);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.beginPath()
+    ctx.arc(coords.head.x, coords.head.y, coords.head.radius, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.stroke()
+  }
+
+  function kinda(num, variance = .4) {
+    return randRange(num - num * variance, num + num * variance)
+  }
+
+  function randRange(min, max) {
+    return Math.random() * (max - min) + min;
+  }
 </script>
 </html>

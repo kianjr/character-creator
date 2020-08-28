@@ -6,8 +6,10 @@
 </head>
 <body>
   <canvas id="c" height="400px" width="400px"></canvas>
-  <button onclick="randomCharacter()">Random Character</button>
-  
+  <div id="sliders">
+  </div>
+  <button onclick="randomize()">Randomize</button>
+  </div>
 </body>
 <style>
   html { background-color: black; }
@@ -19,56 +21,80 @@
   }
   canvas { background-color: white; }
   button { font-size: 30px; width: 100%;}
+  div#sliders > label { font-size: 20px; display: inline-block; width: 25%;}
+  div#sliders > input { display: inline-block; width: 70%;}
 </style>
 <script>
   const canvas = document.getElementById("c")
   const ctx = canvas.getContext('2d')
-  const center = canvas.width / 2
-  const base = canvas.height - 40
-
-  function randomCharacter(){
-    clearCanvas()
-    drawCharacter(randomCoords())
+  let body = {
+    height: {value: 175, min: 80, max: 220},
+    width: {value: 75, min: 20, max: 150},
+    head: {value: 25, min: 20, max: 40},
+    neck: {value: 15, min: 8, max: 23},
+    shoulder: {value: 0, min: -50, max: 50},
+    chest: {value: 0, min: -50, max: 50},
+    waist: {value: 0, min: -50, max: 50},
+    hip: {value: 0, min: -50,max: 50},
+    foot: {value: 0, min: -50, max: 50},
   }
 
-  function clearCanvas(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+  function init(){
+    renderBodyView()
+    renderUIView()
   }
 
-  function randomCoords(){
-    const height = kinda(165);
-    const width = kinda(75);
-    const headSize = kinda(30, .1);
-    const neck = kinda(15);
-    const shoulderWidth = kinda(width);
-    const chestWidth = kinda(width);
-    const waistWidth = kinda(width);
-    const hipWidth = kinda(width);
-    const footWidth = kinda(width);
-    
+  function randomize(){
+    randomizeBody()
+    renderBodyView()
+    renderUIView()
+  }
+
+  function sliderController(){
+    updateBodyFromSliders()
+    renderBodyView()
+  }
+
+
+  function randomizeBody(){
+    Object.keys(body).forEach(function(key){
+      body[key].value = randRange(body[key].min, body[key].max)
+    })
+  }
+
+  function updateBodyFromSliders(){
+    Object.keys(body).forEach(function(key){
+      body[key].value = Number(document.getElementById(key).value)
+    })
+  }
+
+  function generateCoordsFromBody(){
+    const center = canvas.width / 2
+    const base = canvas.height - 40
     const coords = {
-      head: {x: center, y: base - height - headSize - neck, radius: headSize},
+      head: {x: center, y: base - body.height.value - body.head.value - body.neck.value},
 
-      lShoulder: { x: center - shoulderWidth / 2, y: base - height },
-      rShoulder: { x: center + shoulderWidth / 2, y: base - height },
+      lShoulder: { x: center - body.width.value - body.shoulder.value, y: base - body.height.value },
+      rShoulder: { x: center + body.width.value + body.shoulder.value, y: base - body.height.value },
 
-      lChest: { x: center - chestWidth / 2, y: base - height * .85 },
-      rChest: { x: center + chestWidth / 2, y: base - height * .85},
+      lChest: { x: center - body.width.value - body.chest.value, y: base - body.height.value * .85 },
+      rChest: { x: center + body.width.value + body.chest.value, y: base - body.height.value * .85},
 
-      lWaist: { x: center - waistWidth / 2, y: base - height * .6 },
-      rWaist: { x: center + waistWidth / 2, y: base - height * .6 },
+      lWaist: { x: center - body.width.value - body.waist.value, y: base - body.height.value * .6 },
+      rWaist: { x: center + body.width.value + body.waist.value, y: base - body.height.value * .6 },
 
-      lHips: { x: center - hipWidth / 2, y: base - height * .45 },
-      rHips: { x: center + hipWidth / 2, y: base - height * .45 },
+      lHips: { x: center - body.width.value - body.hip.value, y: base - body.height.value * .45 },
+      rHips: { x: center + body.width.value + body.hip.value, y: base - body.height.value * .45 },
 
-      lFoot: { x: center - footWidth / 2, y: base },
-      rFoot: { x: center + footWidth / 2, y: base }
+      lFoot: { x: center - body.width.value - body.foot.value, y: base },
+      rFoot: { x: center + body.width.value + body.foot.value, y: base }
     }
     return coords
   }
 
-
-  function drawCharacter(coords){
+  function renderBodyView(){
+    clearCanvas()
+    const coords = generateCoordsFromBody()
     ctx.beginPath();
     ctx.moveTo(coords.lShoulder.x, coords.lShoulder.y);
     ctx.lineTo(coords.lChest.x, coords.lChest.y);
@@ -84,17 +110,37 @@
     ctx.stroke();
 
     ctx.beginPath()
-    ctx.arc(coords.head.x, coords.head.y, coords.head.radius, 0, Math.PI * 2)
+    ctx.arc(coords.head.x, coords.head.y, body.head.value, 0, Math.PI * 2)
     ctx.closePath()
     ctx.stroke()
   }
 
-  function kinda(num, variance = .4) {
-    return randRange(num - num * variance, num + num * variance)
+  function renderUIView(){
+    sliderDiv = document.getElementById("sliders")
+    sliderDiv.innerHTML= ''
+    Object.keys(body).forEach(function(key){
+      let label = document.createElement('label')
+      label.innerHTML = key
+      sliderDiv.appendChild(label)
+      let slider = document.createElement('input')
+      slider.id = key
+      slider.type = "range"
+      slider.min = body[key].min
+      slider.max = body[key].max
+      slider.value = body[key].value
+      slider.setAttribute("oninput", "sliderController()")
+      sliderDiv.appendChild(slider)
+    })
   }
 
   function randRange(min, max) {
     return Math.random() * (max - min) + min;
   }
+
+  function clearCanvas(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  init()
 </script>
 </html>

@@ -18,8 +18,33 @@
   canvas { background-color: white; }
 </style>
 <script>
-  const canvas = document.getElementById("c");
-  const ctx = canvas.getContext('2d');
-  ctx.strokeRect(200 - 75/2, 180, 75, 150);
+  const canvas = document.getElementById("c")
+  const ctx = canvas.getContext('2d')
+  const baseWidth = 75
+  const baseHeight = 150
+  const leftEdge = 200 - 75/2
+  const rightEdge = leftEdge + baseWidth
+  const topEdge = 180
+  const body = {
+    lShoulder: { x: leftEdge + 10, y: topEdge },
+    rShoulder: { x: rightEdge - 10, y: topEdge },
+    lChest: { x: leftEdge - 10, y: topEdge + baseHeight * .2 },
+    rChest: { x: rightEdge + 10, y: topEdge + baseHeight * .2 },
+    lWaist: { x: leftEdge, y: topEdge + baseHeight * .5 },
+    rWaist: { x: rightEdge, y: topEdge + baseHeight * .5 },
+    lFoot: { x: leftEdge, y: topEdge + baseHeight },
+    rFoot: { x: rightEdge, y: topEdge + baseHeight },
+  }
+  ctx.beginPath();
+  ctx.moveTo(body.lShoulder.x, body.lShoulder.y);
+  ctx.lineTo(body.lChest.x, body.lChest.y);
+  ctx.lineTo(body.lWaist.x, body.lWaist.y);
+  ctx.lineTo(body.lFoot.x, body.lFoot.y);
+  ctx.lineTo(body.rFoot.x, body.rFoot.y);
+  ctx.lineTo(body.rWaist.x, body.rWaist.y);
+  ctx.lineTo(body.rChest.x, body.rChest.y);
+  ctx.lineTo(body.rShoulder.x, body.rShoulder.y);
+  ctx.closePath();
+  ctx.stroke();
 </script>
 </html>
